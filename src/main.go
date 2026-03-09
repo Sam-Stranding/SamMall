@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 
+	"github.com/Sam-Stranding/SamMall/src/adaptor"
 	"github.com/Sam-Stranding/SamMall/src/config"
 	"github.com/Sam-Stranding/SamMall/src/router"
 	"github.com/Sam-Stranding/SamMall/src/utils/logger"
@@ -22,15 +23,16 @@ func main() {
 	handleErr(err)
 	logger.Debug("mysql connect success")
 
-	reids, err := initRedis(&conf.Redis)
+	redis, err := initRedis(&conf.Redis)
 	handleErr(err)
 	logger.Debug("redis connect success")
 
-	startServer(conf, db, reids).Run()
+	startServer(conf, db, redis).Run()
 }
 
 func startServer(conf *config.Config, db *gorm.DB, redis *redis.Client) *router.App {
-	return router.NewApp(conf.Server.HttpPort, router.NewRouter(conf, func() error {
+	adaptor := adaptor.NewAdaptor(conf, db, redis)
+	return router.NewApp(conf.Server.HttpPort, router.NewRouter(adaptor, conf, func() error {
 		err := func() error {
 			pingDb, err := db.DB()
 			handleErr(err)
