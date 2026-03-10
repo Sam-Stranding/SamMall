@@ -1,13 +1,16 @@
 package admin
 
-import "github.com/Sam-Stranding/SamMall/src/adaptor"
+import (
+	"github.com/Sam-Stranding/SamMall/src/adaptor"
+	"github.com/Sam-Stranding/SamMall/src/adaptor/repo/admin"
+)
 
 type Service struct {
-	adaptor *adaptor.Adaptor
+	adminUser admin.IAdminUser
 }
 
 func NewService(adaptor *adaptor.Adaptor) *Service {
 	return &Service{
-		adaptor: adaptor,
+		adminUser: admin.NewAdminUser(adaptor),
 	}
 }
