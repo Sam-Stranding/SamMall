@@ -7,6 +7,7 @@ import (
 
 type Service struct {
 	adminUser admin.IAdminUser
+	userInfo  admin.IAdminUser
 }
 
 func NewService(adaptor *adaptor.Adaptor) *Service {

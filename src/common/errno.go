@@ -34,5 +34,5 @@ var (
 	DatabaseErr = Errno{Code: 10000, Msg: "Database Error"}
 	RedisErr    = Errno{Code: 10001, Msg: "Redis Error"}
 
-	UserExistErr = Errno{Code: 11001, Msg: "User Exist"}
+	UserNotFoundErr = Errno{Code: 11001, Msg: "User Exist"}
 )

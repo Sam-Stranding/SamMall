@@ -4,13 +4,14 @@ import (
 	"context"
 
 	"github.com/Sam-Stranding/SamMall/src/adaptor"
-	"github.com/Sam-Stranding/SamMall/src/service/do"
+	"github.com/Sam-Stranding/SamMall/src/adaptor/repo/model"
+	"github.com/Sam-Stranding/SamMall/src/adaptor/repo/query"
 	"github.com/go-redis/redis"
 	"gorm.io/gorm"
 )
 
 type IAdminUser interface {
-	HelloWorld(ctx context.Context, req *do.HelloWorld) (string, error)
+	GetUserInfo(ctx context.Context, userId int64) (*model.AdminUser, error)
 }
 
 type AdminUser struct {
@@ -25,6 +26,7 @@ func NewAdminUser(adaptor *adaptor.Adaptor) *AdminUser {
 	}
 }
 
-func (a *AdminUser) HelloWorld(ctx context.Context, req *do.HelloWorld) (string, error) {
-	return "hello world", nil
+func (a *AdminUser) GetUserInfo(ctx context.Context, userId int64) (*model.AdminUser, error) {
+	qs := query.Use(a.db).AdminUser
+	return qs.WithContext(ctx).Where(qs.ID.Eq(userId)).First()
 }
