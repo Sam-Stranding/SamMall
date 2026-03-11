@@ -25,13 +25,14 @@ type Router struct {
 	customer  *customer.Ctrl
 }
 
-func NewRouter(adaptor *adaptor.Adaptor, conf *config.Config, checkFunc func() error) *Router {
+func NewRouter(adaptor adaptor.IAdaptor, conf *config.Config, checkFunc func() error) *Router {
 	return &Router{
 		FullPPROF: conf.Server.EnablePprof,
 		rootPath:  "/api/mall",
 		conf:      conf,
 		checkFunc: checkFunc,
 		admin:     admin.NewCtrl(adaptor),
+		customer:  customer.NewCtrl(adaptor),
 	}
 }
 

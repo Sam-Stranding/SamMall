@@ -3,10 +3,10 @@ package customer
 import "github.com/Sam-Stranding/SamMall/src/adaptor"
 
 type Ctrl struct {
-	adaptor *adaptor.Adaptor
+	adaptor adaptor.IAdaptor
 }
 
-func NewCtrl(adaptor *adaptor.Adaptor) *Ctrl {
+func NewCtrl(adaptor adaptor.IAdaptor) *Ctrl {
 	return &Ctrl{
 		adaptor: adaptor,
 	}

@@ -7,11 +7,12 @@ import (
 
 type Service struct {
 	adminUser admin.IAdminUser
-	userInfo  admin.IAdminUser
+	user      admin.IAdminUser
 }
 
-func NewService(adaptor *adaptor.Adaptor) *Service {
+func NewService(adaptor adaptor.IAdaptor) *Service {
 	return &Service{
 		adminUser: admin.NewAdminUser(adaptor),
+		user:      admin.NewAdminUser(adaptor),
 	}
 }
