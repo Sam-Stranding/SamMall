@@ -1,11 +1,13 @@
 package router
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/Sam-Stranding/SamMall/src/adaptor"
 	"github.com/Sam-Stranding/SamMall/src/api/admin"
 	"github.com/Sam-Stranding/SamMall/src/api/customer"
+	"github.com/Sam-Stranding/SamMall/src/common"
 	"github.com/Sam-Stranding/SamMall/src/config"
 	"github.com/gin-gonic/gin"
 )
@@ -51,8 +53,6 @@ func (r *Router) checkServer() func(ctx *gin.Context) {
 }
 
 func (r *Router) Register(app *gin.Engine) {
-	//1.注入鉴权中间件，同时过滤一些不需要鉴权的接口
-	app.Use(AuthMiddleware(r.SpanFilter))
 	if r.conf.Server.EnablePprof {
 		//2.注入pprof
 		SetupPprof(app, "/debug/pprof")
@@ -72,6 +72,22 @@ func (r *Router) AccessRecordFilter(ctx *gin.Context) bool {
 }
 
 func (r *Router) route(root *gin.RouterGroup) {
-	adminRoot := root.Group("/admin")
+	r.customerRoute(root)
+	r.adminRoute(root)
+}
+
+func (r *Router) customerRoute(root *gin.RouterGroup) {
+	//注入鉴权中间件
+	cstRoot := root.Group("/customer", AuthMiddleware(r.SpanFilter, func(ctx context.Context, token string) (*common.User, error) {
+		return &common.User{}, nil
+	}))
+	cstRoot.GET("/user/info", r.admin.GetUserInfo)
+}
+
+func (r *Router) adminRoute(root *gin.RouterGroup) {
+	//注入鉴权中间件
+	adminRoot := root.Group("/admin", AdminAuthMiddleware(r.SpanFilter, func(ctx context.Context, token string) (*common.AdminUser, error) {
+		return &common.AdminUser{}, nil
+	}))
 	adminRoot.GET("/user/info", r.admin.GetUserInfo)
 }

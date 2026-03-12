@@ -7,7 +7,11 @@ import (
 )
 
 func (c *Ctrl) GetUserInfo(ctx *gin.Context) {
-	//token common.AdminUser
+	user := api.GetAdminTokenFromCtx(ctx)
+	if user == nil {
+		api.WriteResp(ctx, nil, common.AuthErr)
+		return
+	}
 	resp, errno := c.user.GetUserInfo(ctx.Request.Context(), &common.AdminUser{})
 	api.WriteResp(ctx, resp, errno)
 }

@@ -5,14 +5,10 @@ import (
 	"io"
 	"time"
 
+	"github.com/Sam-Stranding/SamMall/src/consts"
 	"github.com/Sam-Stranding/SamMall/src/utils/logger"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-)
-
-const (
-	UserToken  = "user_token"
-	AdminToken = "admin_token"
 )
 
 func GetRequestBody(c *gin.Context) string {
@@ -53,7 +49,7 @@ func AccessLogMiddleware(filter func(*gin.Context) bool) gin.HandlerFunc {
 			zap.String("path", c.Request.URL.Path),
 			zap.String("query", c.Request.URL.RawQuery),
 			zap.String("body", body),
-			zap.String("token", c.GetHeader(UserToken)),
+			zap.String("token", c.GetHeader(consts.UserTokenKey)),
 		}
 
 		var responseBody bytes.Buffer
