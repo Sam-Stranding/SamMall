@@ -10,9 +10,9 @@ func (err Errno) Error() string {
 	return err.Msg
 }
 
-func (err Errno) WithMsg(msg string) string {
+func (err Errno) WithMsg(msg string) Errno {
 	err.Msg = err.Msg + "," + msg
-	return err.Msg
+	return err
 }
 
 func (err Errno) WithErr(rawErr error) Errno {

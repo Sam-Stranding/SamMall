@@ -87,7 +87,13 @@ func (r *Router) customerRoute(root *gin.RouterGroup) {
 func (r *Router) adminRoute(root *gin.RouterGroup) {
 	//注入鉴权中间件
 	adminRoot := root.Group("/admin", AdminAuthMiddleware(r.SpanFilter, func(ctx context.Context, token string) (*common.AdminUser, error) {
-		return &common.AdminUser{}, nil
+		return &common.AdminUser{
+			UserID: 1,
+			Name:   "admin",
+		}, nil
 	}))
-	adminRoot.GET("/user/info", r.admin.GetUserInfo)
+	adminRoot.GET("/v1/user/info", r.admin.GetUserInfo)
+	adminRoot.POST("/v1/user/creat", r.admin.CreateUser)
+	adminRoot.POST("/v1/user/update", r.admin.UpdateUser)
+	adminRoot.POST("/v1/user/update_status", r.admin.UpdateUserStatus)
 }
