@@ -15,7 +15,7 @@ type AdminTokenFun func(ctx context.Context, token string) (*common.AdminUser, e
 // AuthMiddleware 用户侧鉴权中间件
 func AuthMiddleware(filter func(*gin.Context) bool, getTokenFun TokenFun) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if filter != nil && filter(ctx) {
+		if filter != nil && !filter(ctx) {
 			ctx.Next()
 			return
 		}
@@ -40,7 +40,7 @@ func AuthMiddleware(filter func(*gin.Context) bool, getTokenFun TokenFun) gin.Ha
 // AdminAuthMiddleware 管理后台鉴权中间件
 func AdminAuthMiddleware(filter func(*gin.Context) bool, getTokenFun AdminTokenFun) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if filter != nil && filter(ctx) {
+		if filter != nil && !filter(ctx) {
 			ctx.Next()
 			return
 		}

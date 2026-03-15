@@ -23,7 +23,7 @@ func (c *Ctrl) CreateUser(ctx *gin.Context) {
 		api.WriteResp(ctx, nil, common.AuthErr)
 		return
 	}
-	req := &dto.CreatUserReq{}
+	req := &dto.CreateUserReq{}
 	if err := ctx.BindJSON(req); err != nil {
 		api.WriteResp(ctx, nil, common.ParamErr.WithMsg(err.Error()))
 	}

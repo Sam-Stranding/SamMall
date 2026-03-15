@@ -36,10 +36,10 @@ func (w *responseWriterWrapper) Write(b []byte) (int, error) {
 
 func AccessLogMiddleware(filter func(*gin.Context) bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//if filter != nil && filter(c) {
-		//	c.Next()
-		//	return
-		//}
+		if filter != nil && !filter(c) {
+			c.Next()
+			return
+		}
 		body := GetRequestBody(c)
 		c.Request.Body = io.NopCloser(bytes.NewBuffer([]byte(body)))
 		begin := time.Now()

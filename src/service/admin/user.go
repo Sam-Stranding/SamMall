@@ -24,7 +24,7 @@ func (s *Service) GetUserInfo(ctx context.Context, adminUser *common.AdminUser) 
 	return &dto.UserInfoResp{UserID: user.ID, Name: user.Name}, common.OK
 }
 
-func (s *Service) CreateUser(ctx context.Context, adminUser *common.AdminUser, req *dto.CreatUserReq) (int64, common.Errno) {
+func (s *Service) CreateUser(ctx context.Context, adminUser *common.AdminUser, req *dto.CreateUserReq) (int64, common.Errno) {
 	userID, err := s.adminUser.CreateUser(ctx, &do.CreateUser{
 		Name:        req.Name,
 		NickName:    req.NickName,

@@ -5,7 +5,7 @@ type UserInfoResp struct {
 	Name   string `json:"name"`
 }
 
-type CreatUserReq struct {
+type CreateUserReq struct {
 	Name     string `json:"name"`
 	NickName string `json:"nick_name"`
 	Mobile   string `json:"mobile"`

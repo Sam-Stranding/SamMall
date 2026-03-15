@@ -63,10 +63,12 @@ func (r *Router) Register(app *gin.Engine) {
 	r.route(root)
 }
 
+// SpanFilter 过滤器
 func (r *Router) SpanFilter(ctx *gin.Context) bool {
 	return true
 }
 
+// AccessRecordFilter 日志过滤器
 func (r *Router) AccessRecordFilter(ctx *gin.Context) bool {
 	return true
 }
@@ -93,7 +95,7 @@ func (r *Router) adminRoute(root *gin.RouterGroup) {
 		}, nil
 	}))
 	adminRoot.GET("/v1/user/info", r.admin.GetUserInfo)
-	adminRoot.POST("/v1/user/creat", r.admin.CreateUser)
+	adminRoot.POST("/v1/user/create", r.admin.CreateUser)
 	adminRoot.POST("/v1/user/update", r.admin.UpdateUser)
 	adminRoot.POST("/v1/user/update_status", r.admin.UpdateUserStatus)
 }
