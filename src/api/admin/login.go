@@ -1,0 +1,18 @@
+package admin
+
+import (
+	"github.com/Sam-Stranding/SamMall/src/api"
+	"github.com/Sam-Stranding/SamMall/src/common"
+	"github.com/Sam-Stranding/SamMall/src/service/dto"
+	"github.com/gin-gonic/gin"
+)
+
+func (c *Ctrl) GetSmsCodeCaptcha(ctx *gin.Context) {
+	req := &dto.GetVerifyCaptchaReq{}
+	if err := ctx.BindQuery(req); err != nil {
+		api.WriteResp(ctx, nil, common.ParamErr.WithErr(err))
+		return
+	}
+	resp, errno := c.user.GetSlideCaptcha(ctx.Request.Context())
+	api.WriteResp(ctx, resp, errno)
+}

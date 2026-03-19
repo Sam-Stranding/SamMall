@@ -3,6 +3,7 @@ package router
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"github.com/Sam-Stranding/SamMall/src/adaptor"
 	"github.com/Sam-Stranding/SamMall/src/api/admin"
@@ -65,6 +66,10 @@ func (r *Router) Register(app *gin.Engine) {
 
 // SpanFilter 过滤器
 func (r *Router) SpanFilter(ctx *gin.Context) bool {
+	path := strings.Replace(ctx.Request.URL.Path, r.rootPath, "", 1)
+	if _, ok := AdminAuthWhiteList[path]; ok {
+		return false
+	}
 	return true
 }
 
@@ -94,6 +99,8 @@ func (r *Router) adminRoute(root *gin.RouterGroup) {
 			Name:   "admin",
 		}, nil
 	}))
+	//登录无鉴权：添加白名单
+	adminRoot.GET("v1/user/verify/captcha", r.admin.GetSmsCodeCaptcha)
 	adminRoot.GET("/v1/user/info", r.admin.GetUserInfo)
 	adminRoot.POST("/v1/user/create", r.admin.CreateUser)
 	adminRoot.POST("/v1/user/update", r.admin.UpdateUser)
