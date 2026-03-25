@@ -34,6 +34,6 @@ type CheckCaptchaReq struct {
 }
 
 type CheckCaptchaDtoResp struct {
-	Ticket string `json:"ticket"`
-	Expire int64  `json:"expire"`
+	Ticket string `json:"ticket"` //票据
+	Expire int64  `json:"expire"` //过期时间
 }

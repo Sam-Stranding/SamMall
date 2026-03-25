@@ -9,6 +9,7 @@ import (
 	"github.com/Sam-Stranding/SamMall/src/service/dto"
 	"github.com/Sam-Stranding/SamMall/src/utils/logger"
 	"github.com/Sam-Stranding/SamMall/src/utils/tools"
+	"github.com/wenlng/go-captcha/v2/slide"
 	"go.uber.org/zap"
 )
 
@@ -60,4 +61,35 @@ func (s *Service) GetSlideCaptcha(ctx context.Context) (*dto.GetVerifyCaptchaRes
 		TitleY:         dotData.TileY,
 	}, common.OK
 
+}
+
+func (s *Service) CheckSlideCaptcha(ctx context.Context, req *dto.CheckCaptchaReq) (*dto.CheckCaptchaDtoResp, common.Errno) {
+	dots, err := s.verify.GetCaptchaKey(ctx, req.Key)
+	if err != nil {
+		logger.Error("CheckSlideCaptcha GetCaptchaKey Error", zap.Error(err))
+		return nil, common.RedisErr.WithErr(err)
+	}
+	if dots == "" {
+		return nil, common.ParamErr.WithMsg("滑块已过期，请重试")
+	}
+	dot := slide.Block{}
+	err = json.Unmarshal([]byte(dots), &dot)
+	if err != nil {
+		logger.Error("CheckSlideCaptcha json.Unmarshal Error", zap.Error(err))
+		return nil, common.InvalidCaptchaErr
+	}
+	ok := slide.CheckPoint(int64(req.SlideX), int64(req.SlideY), int64(dot.X), int64(dot.Y), 5)
+	if !ok {
+		return nil, common.InvalidCaptchaErr
+	}
+	ticket := tools.UUIDHex()
+	err = s.verify.SetCaptchaTicket(ctx, ticket, req.Key, time.Minute*5)
+	if err != nil {
+		logger.Error("CheckSlideCaptcha SetCaptchaTicket Error", zap.Error(err))
+		return nil, common.RedisErr.WithErr(err)
+	}
+	return &dto.CheckCaptchaDtoResp{
+		Expire: 280,
+		Ticket: ticket,
+	}, common.OK
 }

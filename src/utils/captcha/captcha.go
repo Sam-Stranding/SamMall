@@ -8,6 +8,8 @@ import (
 	"github.com/wenlng/go-captcha/v2/slide"
 )
 
+// NewSlideCaptcha 滑动验证码
+// gen graph 生成图
 func NewSlideCaptcha() slide.Captcha {
 	builder := slide.NewBuilder(
 		slide.WithGenGraphNumber(1),
