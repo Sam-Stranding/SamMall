@@ -2,6 +2,7 @@ package admin
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 
 	"github.com/Sam-Stranding/SamMall/src/common"
@@ -12,7 +13,22 @@ import (
 	"gorm.io/gorm"
 )
 
-func (s *Service) GetUserInfo(ctx context.Context, adminUser *common.AdminUser) (*dto.UserInfoResp, common.Errno) {
+func (s *Service) GetAdminUserByToken(ctx context.Context, token string) (*common.AdminUser, common.Errno) {
+	userString, err := s.verify.GetAdminUserToken(ctx, token)
+	if err != nil {
+		logger.Error("GetAdminUserToken err", zap.Error(err), zap.Any("token", token))
+		return nil, common.RedisErr.WithErr(err)
+	}
+	adminUser := &common.AdminUser{}
+	err = json.Unmarshal([]byte(userString), adminUser)
+	if err != nil {
+		logger.Error("GetAdminUserToken json.Unmarshal err", zap.Error(err), zap.String("userString", userString))
+		return nil, common.RedisErr.WithErr(err)
+	}
+	return adminUser, common.OK
+}
+
+func (s *Service) GetUserInfo(ctx context.Context, adminUser *common.AdminUser) (*dto.AdminUserDto, common.Errno) {
 	user, err := s.adminUser.GetUserInfo(ctx, 1)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -21,7 +37,7 @@ func (s *Service) GetUserInfo(ctx context.Context, adminUser *common.AdminUser) 
 		logger.Error("GetUserInfo GetUserInfo err", zap.Error(err), zap.Any("user_id", adminUser))
 		return nil, common.DatabaseErr.WithErr(err)
 	}
-	return &dto.UserInfoResp{UserID: user.ID, Name: user.Name}, common.OK
+	return &dto.AdminUserDto{UserID: user.ID, Name: user.Name}, common.OK
 }
 
 func (s *Service) CreateUser(ctx context.Context, adminUser *common.AdminUser, req *dto.CreateUserReq) (int64, common.Errno) {

@@ -1,11 +1,21 @@
 package admin
 
 import (
+	"context"
+
 	"github.com/Sam-Stranding/SamMall/src/api"
 	"github.com/Sam-Stranding/SamMall/src/common"
 	"github.com/Sam-Stranding/SamMall/src/service/dto"
 	"github.com/gin-gonic/gin"
 )
+
+func (c *Ctrl) GetAdminUserByToken(ctx context.Context, token string) (*common.AdminUser, error) {
+	adminUser, errno := c.user.GetAdminUserByToken(ctx, token)
+	if errno.NotOk() {
+		return nil, errno
+	}
+	return adminUser, nil
+}
 
 func (c *Ctrl) GetUserInfo(ctx *gin.Context) {
 	user := api.GetAdminTokenFromCtx(ctx)

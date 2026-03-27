@@ -17,6 +17,7 @@ type IAdminUser interface {
 	CreateUser(ctx context.Context, req *do.CreateUser) (int64, error)
 	UpdateUser(ctx context.Context, req *do.UpdateUser) error
 	UpdateUserStatus(ctx context.Context, req *do.UpdateUserStatus) error
+	GetUserByMobile(ctx context.Context, mobile string) (*model.AdminUser, error)
 	GetUserInfo(ctx context.Context, userId int64) (*model.AdminUser, error)
 }
 
@@ -86,4 +87,9 @@ func (a *AdminUser) UpdateUserStatus(ctx context.Context, req *do.UpdateUserStat
 func (a *AdminUser) GetUserInfo(ctx context.Context, userId int64) (*model.AdminUser, error) {
 	qs := query.Use(a.db).AdminUser
 	return qs.WithContext(ctx).Where(qs.ID.Eq(userId)).First()
+}
+
+func (a *AdminUser) GetUserByMobile(ctx context.Context, mobile string) (*model.AdminUser, error) {
+	qs := query.Use(a.db).AdminUser
+	return qs.WithContext(ctx).Where(qs.Mobile.Eq(mobile)).First()
 }

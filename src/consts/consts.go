@@ -1,10 +1,18 @@
 package consts
 
+import "time"
+
 const (
 	UserTokenKey    = "token"
 	AdminTokenKey   = "token"
 	CustomerUserKey = "user_key"
 	AdminUserKey    = "admin_user_key"
+)
+
+const (
+	AdminUserTokenExpire = time.Hour * 24
+	PasswordErrExpire    = time.Minute * 10
+	PasswordErrMaxCount  = 3
 )
 
 const (

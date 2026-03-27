@@ -37,3 +37,14 @@ type CheckCaptchaDtoResp struct {
 	Ticket string `json:"ticket"` //票据
 	Expire int64  `json:"expire"` //过期时间
 }
+
+type MobilePasswordLoginReq struct {
+	Mobile   string `json:"mobile"`
+	Password string `json:"password"`
+	Ticket   string `json:"ticket"`
+}
+
+type LoginResp struct {
+	Token string       `json:"token"`
+	User  AdminUserDto `json:"user"`
+}
