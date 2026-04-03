@@ -10,6 +10,10 @@ const (
 )
 
 const (
+	ExpireTokenDueDuration = 200
+)
+
+const (
 	AdminUserTokenExpire = time.Hour * 24
 	PasswordErrExpire    = time.Minute * 10
 	PasswordErrMaxCount  = 3

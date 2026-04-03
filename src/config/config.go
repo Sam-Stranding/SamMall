@@ -25,9 +25,10 @@ var (
 )
 
 type Config struct {
-	Server Server `yaml:"server"`
-	Mysql  Mysql  `yaml:"mysql"`
-	Redis  Redis  `yaml:"redis"`
+	Server  Server            `yaml:"server"`
+	Mysql   Mysql             `yaml:"mysql"`
+	Redis   Redis             `yaml:"redis"`
+	AppConf map[int32]AppConf `yaml:"appConf"`
 }
 
 type Server struct {
@@ -61,6 +62,13 @@ type Redis struct {
 	DBIndex int    `yaml:"db_index"`
 	MaxIdle int    `yaml:"max_idle"`
 	MaxOpen int    `yaml:"max_open"`
+}
+
+type AppConf struct {
+	AppType   string `yaml:"app_type"`
+	AppName   string `yaml:"app_name"`
+	AppID     string `yaml:"app_id"`
+	AppSecret string `yaml:"app_secret"`
 }
 
 func init() {

@@ -36,3 +36,11 @@ func (c *Ctrl) MobilePasswordLogin(ctx *gin.Context) {
 	resp, errno := c.user.MobilePasswordLogin(ctx.Request.Context(), req)
 	api.WriteResp(ctx, resp, errno)
 }
+
+func (c *Ctrl) MobileVerifyLogin(ctx *gin.Context) {
+
+}
+
+func (c *Ctrl) LarkQrCodeLogin(ctx *gin.Context) {
+
+}

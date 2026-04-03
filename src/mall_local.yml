@@ -23,3 +23,15 @@ redis:
   db_index: 0
   max_idle: 2
   max_open: 10
+
+app_conf:
+   1000:
+     app_type: official
+     app_name: 公众号
+     app_id: 1000
+     app_secret: 919188a8448481381
+   2000:
+     app_type: lark
+     app_name: 飞书
+     app_id: cli_a941aa77f6791bb4
+     app_secret: 5KKpKYHLzmkA7mLzGgk9UbaeDQc5VfzW
