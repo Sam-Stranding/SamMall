@@ -17,6 +17,12 @@ type LarkUserInfo struct {
 	EmployeeNo      string `json:"employee_no"`      //用户工号（）
 }
 
+type LarkUserInfoResp struct {
+	Code int64        `json:"code"`
+	Msg  string       `json:"msg"`
+	Data LarkUserInfo `json:"data"`
+}
+
 type LarkUserAccessToken struct {
 	Code        int64  `json:"code"`
 	AccessToken string `json:"access_token"`

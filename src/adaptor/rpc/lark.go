@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/Sam-Stranding/SamMall/src/adaptor"
@@ -40,13 +41,28 @@ func (l *Lark) GetLarkUserInfo(ctx context.Context, userAccessToken string) (*do
 		"Content-Type":  headerCT,
 		"Authorization": "Bearer " + userAccessToken,
 	}
-	resp := &do.LarkUserInfo{}
-	err, _ := http.Get(ctx, url, headers, resp)
+	err, respBody := http.Get(ctx, url, headers, nil)
 	if err != nil {
 		logger.Error("GetLarkUserInfo error", zap.Error(err))
 		return nil, err
 	}
+	resp, err := parseLarkUserInfoResponse(respBody)
+	if err != nil {
+		logger.Error("GetLarkUserInfo parse response error", zap.Error(err))
+		return nil, err
+	}
 	return resp, nil
+}
+
+func parseLarkUserInfoResponse(respBody []byte) (*do.LarkUserInfo, error) {
+	resp := &do.LarkUserInfoResp{}
+	if err := json.Unmarshal(respBody, resp); err != nil {
+		return nil, err
+	}
+	if resp.Code != 0 {
+		return nil, fmt.Errorf("lark get user info failed: code=%d, msg=%s", resp.Code, resp.Msg)
+	}
+	return &resp.Data, nil
 }
 
 func (l *Lark) GetLarkAccessToken(ctx context.Context,
