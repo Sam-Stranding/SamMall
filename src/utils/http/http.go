@@ -28,11 +28,13 @@ func doRequest(ctx context.Context, method string, url string, headers map[strin
 		reader = bytes.NewReader(payload)
 	}
 
+	//创建请求
 	req, err := stdhttp.NewRequestWithContext(ctx, method, url, reader)
 	if err != nil {
 		return err, nil
 	}
 
+	//遍历映射请求头
 	for key, value := range headers {
 		req.Header.Set(key, value)
 	}

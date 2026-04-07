@@ -17,8 +17,10 @@ type IAdminUser interface {
 	CreateUser(ctx context.Context, req *do.CreateUser) (int64, error)
 	UpdateUser(ctx context.Context, req *do.UpdateUser) error
 	UpdateUserStatus(ctx context.Context, req *do.UpdateUserStatus) error
+
 	GetUserByMobile(ctx context.Context, mobile string) (*model.AdminUser, error)
 	GetUserInfo(ctx context.Context, userId int64) (*model.AdminUser, error)
+	GetUserByLarkOpenID(ctx context.Context, openID string) (*model.AdminUser, error)
 }
 
 type AdminUser struct {
@@ -92,4 +94,9 @@ func (a *AdminUser) GetUserInfo(ctx context.Context, userId int64) (*model.Admin
 func (a *AdminUser) GetUserByMobile(ctx context.Context, mobile string) (*model.AdminUser, error) {
 	qs := query.Use(a.db).AdminUser
 	return qs.WithContext(ctx).Where(qs.Mobile.Eq(mobile)).First()
+}
+
+func (a *AdminUser) GetUserByLarkOpenID(ctx context.Context, openID string) (*model.AdminUser, error) {
+	qs := query.Use(a.db).AdminUser
+	return qs.WithContext(ctx).Where(qs.LarkOpenID.Eq(openID)).First()
 }

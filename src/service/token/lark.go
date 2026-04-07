@@ -34,5 +34,5 @@ func (s *Service) getLarkUserAccessToken(ctx context.Context, appCode int32, cod
 		logger.Error("getLarkUserAccessToken getTokenFunc get access token failed", zap.Error(err), zap.Int32("appCode", appCode))
 		return nil, common.ServerErr.WithErr(err)
 	}
-	return rpcToken, common.OK
+	return rpcToken, nil
 }

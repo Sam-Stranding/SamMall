@@ -28,7 +28,7 @@ type Config struct {
 	Server  Server            `yaml:"server"`
 	Mysql   Mysql             `yaml:"mysql"`
 	Redis   Redis             `yaml:"redis"`
-	AppConf map[int32]AppConf `yaml:"appConf"`
+	AppConf map[int32]AppConf `yaml:"app_conf"`
 }
 
 type Server struct {

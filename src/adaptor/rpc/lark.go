@@ -18,7 +18,7 @@ const (
 )
 
 type ILark interface {
-	GetLarkUserInfo(ctx context.Context, OpenID string) (*do.LarkUserInfo, error)
+	GetLarkUserInfo(ctx context.Context, userAccessToken string) (*do.LarkUserInfo, error)
 	GetLarkAccessToken(ctx context.Context,
 		appCode int32, code string,
 		redirectUrl string, scope string) (*do.LarkUserAccessToken, error)

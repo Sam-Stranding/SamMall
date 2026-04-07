@@ -42,5 +42,11 @@ func (c *Ctrl) MobileVerifyLogin(ctx *gin.Context) {
 }
 
 func (c *Ctrl) LarkQrCodeLogin(ctx *gin.Context) {
-
+	req := dto.LarkQrCodeLoginReq{}
+	if err := ctx.BindJSON(&req); err != nil {
+		api.WriteResp(ctx, nil, common.ParamErr.WithErr(err))
+		return
+	}
+	resp, errno := c.user.LarkQrCodeLogin(ctx.Request.Context(), req)
+	api.WriteResp(ctx, resp, errno)
 }

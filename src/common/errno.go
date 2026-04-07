@@ -42,8 +42,9 @@ var (
 	DatabaseErr = Errno{Code: 10000, Msg: "Database Error"}
 	RedisErr    = Errno{Code: 10001, Msg: "Redis Error"}
 
-	UserNotFoundErr    = Errno{Code: 11001, Msg: "手机号用户不存在"}
-	InvalidCaptchaErr  = Errno{Code: 11002, Msg: "滑块校验失败，请重试"}
-	InvalidPasswordErr = Errno{Code: 11003, Msg: "用户不存在或密码错误"}
-	PasswordErrLimit   = Errno{Code: 11004, Msg: "用户名或密码错误次数过多，请10分钟后重试"}
+	UserNotFoundErr      = Errno{Code: 11001, Msg: "手机号用户不存在"}
+	InvalidCaptchaErr    = Errno{Code: 11002, Msg: "滑块校验失败，请重试"}
+	InvalidPasswordErr   = Errno{Code: 11003, Msg: "用户不存在或密码错误"}
+	PasswordErrLimit     = Errno{Code: 11004, Msg: "用户名或密码错误次数过多，请10分钟后重试"}
+	AdminUSerNotFoundErr = Errno{Code: 11005, Msg: "管理员用户不存在"}
 )

@@ -79,3 +79,45 @@ func (s *Service) MobilePasswordLogin(ctx context.Context, req *dto.MobilePasswo
 		User:  adminUserDto,
 	}, common.OK
 }
+
+func (s *Service) LarkQrCodeLogin(ctx context.Context, req dto.LarkQrCodeLoginReq) (interface{}, common.Errno) {
+	accessToken, errno := s.token.GetLarkUserAccessToken(ctx, req.AppCode, req.Code, req.RedirectUri, "", false)
+	if errno.NotOk() {
+		logger.Error("LarkQrCodeLogin GetLarkUserAccessToken Error", zap.Error(errno), zap.Any("req", req))
+		return nil, common.ServerErr.WithErr(errno)
+	}
+	larkUserInfo, err := s.lark.GetLarkUserInfo(ctx, accessToken.Token)
+	if err != nil {
+		logger.Error("LarkQrCodeLogin GetLarkUserInfo Error", zap.Error(err), zap.Any("req", req))
+		return nil, common.ServerErr.WithErr(err)
+	}
+	adminUser, err := s.user.GetUserByLarkOpenID(ctx, larkUserInfo.OpenID)
+	if err != nil {
+		logger.Error("LarkQrCodeLogin GetUserByLarkOpenID Error", zap.Error(err), zap.Any("req", req))
+		return nil, common.DatabaseErr.WithErr(err)
+	}
+	if adminUser == nil || adminUser.Status != consts.IsEnable {
+		return nil, common.AdminUSerNotFoundErr
+	}
+	adminUserDto := dto.AdminUserDto{
+		UserID:     adminUser.ID,
+		Name:       adminUser.Name,
+		NickName:   adminUser.NickName,
+		Sex:        adminUser.Sex,
+		Status:     adminUser.Status,
+		Mobile:     adminUser.Mobile,
+		LarkOpenID: adminUser.LarkOpenID,
+		UpdateAt:   adminUser.UpdateAt.UnixMilli(),
+		CreateAt:   adminUser.CreateAt.UnixMilli(),
+	}
+	tokenUuid := tools.UUIDHex()
+	err = s.processToken(ctx, tokenUuid, &adminUserDto)
+	if err != nil {
+		logger.Error("LarkQrCodeLogin processToken Error", zap.Error(err), zap.Any("req", req))
+		return nil, common.RedisErr.WithErr(err)
+	}
+	return &dto.LoginResp{
+		Token: tokenUuid,
+		User:  adminUserDto,
+	}, common.OK
+}
