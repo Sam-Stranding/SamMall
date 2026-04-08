@@ -23,6 +23,7 @@ type ILark interface {
 	GetLarkAccessToken(ctx context.Context,
 		appCode int32, code string,
 		redirectUrl string, scope string) (*do.LarkUserAccessToken, error)
+	GetTenantAccessToken(ctx context.Context, appCode int32) (*do.TenantAccessToken, error)
 }
 
 type Lark struct {
@@ -86,6 +87,26 @@ func (l *Lark) GetLarkAccessToken(ctx context.Context,
 	err := http.Post(ctx, url, headers, body, resp)
 	if err != nil {
 		logger.Error("GetLarkAccessToken error", zap.Error(err))
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (l *Lark) GetTenantAccessToken(ctx context.Context, appCode int32) (*do.TenantAccessToken, error) {
+	url := fmt.Sprintf("%s/open-apis/auth/v3/tenant_access_token/internal", larkHost)
+
+	body := map[string]interface{}{
+		"app_id":     l.conf.AppConf[appCode].AppID,
+		"app_secret": l.conf.AppConf[appCode].AppSecret,
+	}
+
+	headers := map[string]string{
+		"Content-Type": headerCT,
+	}
+	resp := &do.TenantAccessToken{}
+	err := http.Post(ctx, url, headers, body, resp)
+	if err != nil {
+		logger.Error("GetTenantAccessToken error", zap.Error(err))
 		return nil, err
 	}
 	return resp, nil

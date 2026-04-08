@@ -36,3 +36,32 @@ func (s *Service) getLarkUserAccessToken(ctx context.Context, appCode int32, cod
 	}
 	return rpcToken, nil
 }
+
+func (s *Service) GetTenantAccessToken(ctx context.Context, appCode int32) (*TenantAccessToken, common.Errno) {
+	token, err := s.getTenantAccessToken(ctx, appCode)
+	if err != nil {
+		logger.Error("GetTenantAccessToken get access token failed", zap.Error(err), zap.Int32("appCode", appCode))
+		return nil, common.ServerErr.WithErr(err)
+	}
+	return token, common.OK
+}
+
+func (s *Service) getTenantAccessToken(ctx context.Context, appCode int32) (*TenantAccessToken, error) {
+	getTokenFunc := func() (*TenantAccessToken, error) {
+		token, err := s.lark.GetTenantAccessToken(ctx, appCode)
+		if err != nil {
+			logger.Error("getTenantAccessToken GetTenantAccessToken get access token failed", zap.Error(err), zap.Int32("appCode", appCode))
+			return nil, common.ServerErr.WithErr(err)
+		}
+		return &TenantAccessToken{
+			Expire:            token.Expire,
+			TenantAccessToken: token.TenantAccessToken,
+		}, nil
+	}
+	rpcToken, err := getTokenFunc()
+	if err != nil {
+		logger.Error("getTenantAccessToken getTokenFunc get access token failed", zap.Error(err), zap.Int32("appCode", appCode))
+		return nil, common.ServerErr.WithErr(err)
+	}
+	return rpcToken, nil
+}

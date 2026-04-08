@@ -80,6 +80,38 @@ func (s *Service) MobilePasswordLogin(ctx context.Context, req *dto.MobilePasswo
 	}, common.OK
 }
 
+func (s *Service) GetSmsCode(ctx context.Context, req *dto.GetSmsCodeReq) (*dto.GetSmsCodeResp, common.Errno) {
+	TenantAccessToken, errno := s.token.GetTenantAccessToken(ctx, req.AppCode)
+	if errno.NotOk() {
+		logger.Error("GetSmsCode GetTenantAccessToken Error", zap.Error(errno), zap.String("mobile", req.Mobile))
+		return nil, common.ServerErr.WithErr(errno)
+	}
+	UserOpenID, err := s.user.GetOpenIDByMobile(ctx, req.Mobile)
+	if err != nil {
+		logger.Error("GetSmsCode GetOpenIDByMobile Error", zap.Error(err), zap.String("mobile", req.Mobile))
+		return nil, common.ServerErr.WithErr(err)
+	}
+	SmsCode, err := s.news.GetLarkSmsCode(ctx, req, TenantAccessToken.TenantAccessToken, UserOpenID)
+	if err != nil {
+		logger.Error("GetSmsCode GetLarkSmsCode Error", zap.Error(err), zap.String("mobile", req.Mobile))
+		return &dto.GetSmsCodeResp{
+			ErrCode: SmsCode.ErrCode,
+			ErrMsg:  SmsCode.ErrMsg,
+		}, common.ServerErr.WithErr(err)
+	}
+	return &dto.GetSmsCodeResp{
+		Code: SmsCode.Code,
+		Msg:  SmsCode.Msg,
+	}, common.OK
+}
+
+//func (s *Service) MobileVerifyLogin(ctx context.Context, req *dto.MobileVerifyLoginReq) (string, common.Errno) {
+//	//savedCaptcha, err := s.verify.GetSmsCode(ctx, req.Mobile)
+//	//if err != nil || savedCaptcha != req.Captcha {
+//	//	return "", common.InvalidCaptchaErr
+//	//}
+//}
+
 func (s *Service) LarkQrCodeLogin(ctx context.Context, req dto.LarkQrCodeLoginReq) (interface{}, common.Errno) {
 	accessToken, errno := s.token.GetLarkUserAccessToken(ctx, req.AppCode, req.Code, req.RedirectUri, "", false)
 	if errno.NotOk() {

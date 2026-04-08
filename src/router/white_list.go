@@ -7,4 +7,5 @@ var AdminAuthWhiteList = map[string]bool{
 	"/admin/v1/user/verify/captcha/check":  true,
 	"/admin/v1/user/mobile/password_login": true,
 	"/admin/v1/user/lark/qrcode_login":     true,
+	"/admin/v1/user/verify/smscode":        true,
 }

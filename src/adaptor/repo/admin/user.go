@@ -21,6 +21,7 @@ type IAdminUser interface {
 	GetUserByMobile(ctx context.Context, mobile string) (*model.AdminUser, error)
 	GetUserInfo(ctx context.Context, userId int64) (*model.AdminUser, error)
 	GetUserByLarkOpenID(ctx context.Context, openID string) (*model.AdminUser, error)
+	GetOpenIDByMobile(ctx context.Context, mobile string) (string, error)
 }
 
 type AdminUser struct {
@@ -99,4 +100,14 @@ func (a *AdminUser) GetUserByMobile(ctx context.Context, mobile string) (*model.
 func (a *AdminUser) GetUserByLarkOpenID(ctx context.Context, openID string) (*model.AdminUser, error) {
 	qs := query.Use(a.db).AdminUser
 	return qs.WithContext(ctx).Where(qs.LarkOpenID.Eq(openID)).First()
+}
+
+func (a *AdminUser) GetOpenIDByMobile(ctx context.Context, mobile string) (string, error) {
+	qs := query.Use(a.db).AdminUser
+	var openID string
+	err := qs.WithContext(ctx).Select(qs.LarkOpenID).Where(qs.Mobile.Eq(mobile)).Scan(&openID)
+	if err != nil {
+		return "", err
+	}
+	return openID, nil
 }

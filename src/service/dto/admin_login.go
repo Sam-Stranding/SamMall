@@ -38,6 +38,24 @@ type CheckCaptchaDtoResp struct {
 	Expire int64  `json:"expire"` //过期时间
 }
 
+type GetSmsCodeReq struct {
+	Mobile  string `json:"mobile"`
+	Ticket  string `json:"ticket"`
+	AppCode int32  `json:"app_code"`
+}
+
+type GetSmsCodeResp struct {
+	Code    string `json:"code"`
+	Msg     string `json:"msg"`
+	ErrCode int64  `json:"err_code"`
+	ErrMsg  string `json:"err_msg"`
+}
+
+type MobileVerifyLoginReq struct {
+	Mobile  string `json:"mobile"`
+	Captcha string `json:"captcha"`
+}
+
 type MobilePasswordLoginReq struct {
 	Mobile   string `json:"mobile"`
 	Password string `json:"password"`

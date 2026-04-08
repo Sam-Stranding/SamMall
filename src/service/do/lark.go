@@ -30,3 +30,15 @@ type LarkUserAccessToken struct {
 	ErrCode     string `json:"errcode"`
 	ErrMsg      string `json:"errmsg"`
 }
+
+type TenantAccessToken struct {
+	Code              int64  `json:"code"`
+	Msg               string `json:"msg"`
+	TenantAccessToken string `json:"tenant_access_token"`
+	Expire            int64  `json:"expire"`
+}
+
+type LarkSmsCodeResp struct {
+	Code int64  `json:"code"`
+	Msg  string `json:"msg"`
+}

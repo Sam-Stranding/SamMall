@@ -21,6 +21,11 @@ type AccessToken struct {
 	ExpireIn int64  `json:"expire_in"`
 }
 
+type TenantAccessToken struct {
+	TenantAccessToken string `json:"tenant_access_token"`
+	Expire            int64  `json:"expire"`
+}
+
 type GetToken func() (*AccessToken, error)
 
 type Service struct {

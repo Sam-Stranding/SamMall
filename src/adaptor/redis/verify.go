@@ -7,7 +7,12 @@ import (
 
 	"github.com/Sam-Stranding/SamMall/src/adaptor"
 	"github.com/Sam-Stranding/SamMall/src/config"
+	"github.com/Sam-Stranding/SamMall/src/service/do"
+	"github.com/Sam-Stranding/SamMall/src/service/dto"
+	"github.com/Sam-Stranding/SamMall/src/utils/http"
+	"github.com/Sam-Stranding/SamMall/src/utils/logger"
 	"github.com/go-redis/redis"
+	"go.uber.org/zap"
 )
 
 type IVerify interface {
@@ -21,11 +26,18 @@ type IVerify interface {
 
 	IncrPasswordErr(ctx context.Context, mobile string, expire time.Duration) (int64, error)
 	DeletePasswordErr(ctx context.Context, mobile string) error
+
+	GetLarkSmsCode(ctx context.Context, req *dto.GetSmsCodeReq, TenantAccessToken string, UserOpenID string, captcha string) (*do.LarkSmsCodeResp, error)
 }
 
 type Verify struct {
 	redis *redis.Client
 }
+
+const (
+	larkHost = "https://open.feishu.cn"
+	headerCT = "application/json; charset=utf-8"
+)
 
 func NewVerify(adaptor adaptor.IAdaptor) *Verify {
 	return &Verify{redis: adaptor.GetRedis()}
@@ -110,4 +122,24 @@ func (v *Verify) IncrPasswordErr(ctx context.Context, mobile string, expire time
 func (v *Verify) DeletePasswordErr(ctx context.Context, mobile string) error {
 	redisMobile := fmtVerifyMobilePasswordErr(mobile)
 	return v.redis.Del(redisMobile).Err()
+}
+
+func (v *Verify) GetLarkSmsCode(ctx context.Context, req *dto.GetSmsCodeReq, TenantAccessToken string, UserOpenID string, captcha string) (*do.LarkSmsCodeResp, error) {
+	url := fmt.Sprintf("%s/open-apis/im/v1/messages?receive_id_type=open_id", larkHost)
+	headers := map[string]string{
+		"Authorization": "Bearer " + TenantAccessToken,
+		"Context-Type":  headerCT,
+	}
+	body := map[string]string{
+		"receive_id": UserOpenID,
+		"msg_type":   "text",
+		"content":    fmt.Sprintf(`{"text":"%s"}`, captcha),
+	}
+	resp := &do.LarkSmsCodeResp{}
+	err := http.Post(ctx, url, headers, body, resp)
+	if err != nil {
+		logger.Error("GetLarkSmsCode error", zap.Error(err))
+		return nil, err
+	}
+	return resp, nil
 }
