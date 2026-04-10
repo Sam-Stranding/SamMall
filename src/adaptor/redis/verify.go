@@ -28,6 +28,9 @@ type IVerify interface {
 	DeletePasswordErr(ctx context.Context, mobile string) error
 
 	GetLarkSmsCode(ctx context.Context, req *dto.GetSmsCodeReq, TenantAccessToken string, UserOpenID string, captcha string) (*do.LarkSmsCodeResp, error)
+
+	SetMobileVerifyCode(ctx context.Context, mobile string, code string, expire time.Duration) error
+	GetMobileVerifyCode(ctx context.Context, mobile string) (string, error)
 }
 
 type Verify struct {
@@ -142,4 +145,23 @@ func (v *Verify) GetLarkSmsCode(ctx context.Context, req *dto.GetSmsCodeReq, Ten
 		return nil, err
 	}
 	return resp, nil
+}
+
+func fmtMobileVerifyCode(mobile string) string {
+	return fmt.Sprintf("%s:mobile_verify:%s", config.ServerFullName, mobile)
+}
+
+func (v *Verify) SetMobileVerifyCode(ctx context.Context, mobile string, code string, expire time.Duration) error {
+	redisMobile := fmtMobileVerifyCode(mobile)
+	return v.redis.Set(redisMobile, code, expire).Err()
+}
+
+func (v *Verify) GetMobileVerifyCode(ctx context.Context, mobile string) (string, error) {
+	redisMobile := fmtMobileVerifyCode(mobile)
+	verify, err := v.redis.Get(redisMobile).Result()
+	if err != nil {
+		return "", err
+	}
+	v.redis.Del(redisMobile)
+	return verify, nil
 }

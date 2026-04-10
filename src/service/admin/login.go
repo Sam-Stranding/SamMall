@@ -105,12 +105,45 @@ func (s *Service) GetSmsCode(ctx context.Context, req *dto.GetSmsCodeReq) (*dto.
 	}, common.OK
 }
 
-//func (s *Service) MobileVerifyLogin(ctx context.Context, req *dto.MobileVerifyLoginReq) (string, common.Errno) {
-//	//savedCaptcha, err := s.verify.GetSmsCode(ctx, req.Mobile)
-//	//if err != nil || savedCaptcha != req.Captcha {
-//	//	return "", common.InvalidCaptchaErr
-//	//}
-//}
+func (s *Service) MobileVerifyLogin(ctx context.Context, req *dto.MobileVerifyLoginReq) (*dto.MobileVerifyLoginResp, common.Errno) {
+	//验证码校验
+	_, err := s.news.VerifyMobileVerifyCode(ctx, req.Mobile, req.Captcha)
+	if err != nil {
+		logger.Error("MobileVerifyLogin VerifyMobileVerifyCode Error", zap.Error(err), zap.String("mobile", req.Mobile))
+		return nil, common.ServerErr.WithErr(err)
+	}
+
+	//获取用户信息
+	adminUser, err := s.user.GetUserByMobile(ctx, req.Mobile)
+	if err != nil {
+		logger.Error("MobileVerifyLogin GetUserByMobile Error", zap.Error(err), zap.String("mobile", req.Mobile))
+		return nil, common.DatabaseErr.WithErr(err)
+	}
+	if adminUser == nil || adminUser.Status != consts.IsEnable {
+		return nil, common.InvalidPasswordErr
+	}
+	adminUserDto := dto.AdminUserDto{
+		UserID:     adminUser.ID,
+		Name:       adminUser.Name,
+		NickName:   adminUser.NickName,
+		Sex:        adminUser.Sex,
+		Status:     adminUser.Status,
+		Mobile:     adminUser.Mobile,
+		LarkOpenID: adminUser.LarkOpenID,
+		UpdateAt:   adminUser.UpdateAt.UnixMilli(),
+		CreateAt:   adminUser.CreateAt.UnixMilli(),
+	}
+	tokenUuid := tools.UUIDHex()
+	err = s.processToken(ctx, tokenUuid, &adminUserDto)
+	if err != nil {
+		logger.Error("MobilePasswordLogin processToken Error", zap.Error(err), zap.String("mobile", req.Mobile))
+		return nil, common.RedisErr.WithErr(err)
+	}
+	return &dto.MobileVerifyLoginResp{
+		Token: tokenUuid,
+		User:  adminUserDto,
+	}, common.OK
+}
 
 func (s *Service) LarkQrCodeLogin(ctx context.Context, req dto.LarkQrCodeLoginReq) (interface{}, common.Errno) {
 	accessToken, errno := s.token.GetLarkUserAccessToken(ctx, req.AppCode, req.Code, req.RedirectUri, "", false)

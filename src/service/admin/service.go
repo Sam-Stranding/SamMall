@@ -5,7 +5,7 @@ import (
 	"github.com/Sam-Stranding/SamMall/src/adaptor/redis"
 	"github.com/Sam-Stranding/SamMall/src/adaptor/repo/admin"
 	"github.com/Sam-Stranding/SamMall/src/adaptor/rpc"
-	"github.com/Sam-Stranding/SamMall/src/service/News"
+	"github.com/Sam-Stranding/SamMall/src/service/news"
 	"github.com/Sam-Stranding/SamMall/src/service/token"
 	"github.com/Sam-Stranding/SamMall/src/utils/captcha"
 	"github.com/wenlng/go-captcha/v2/slide"
@@ -18,7 +18,7 @@ type Service struct {
 	verify    redis.IVerify
 	token     *token.Service
 	lark      rpc.ILark
-	news      *News.Service
+	news      *news.Service
 }
 
 func NewService(adaptor adaptor.IAdaptor) *Service {
@@ -29,6 +29,6 @@ func NewService(adaptor adaptor.IAdaptor) *Service {
 		captcha:   captcha.NewSlideCaptcha(),
 		token:     token.NewService(adaptor),
 		lark:      rpc.NewLark(adaptor),
-		news:      News.NewService(adaptor),
+		news:      news.NewService(adaptor),
 	}
 }

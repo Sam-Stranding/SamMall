@@ -4,17 +4,17 @@ package redis
 //	GetLarkSmsCode(ctx context.Context, req *dto.GetSmsCodeReq, TenantAccessToken string, UserOpenID string, captcha string) (*do.LarkSmsCodeResp, error)
 //}
 //
-//type News struct {
+//type news struct {
 //	redis *redis.Client
 //}
 //
-//func NewNews(adaptor adaptor.IAdaptor) *News {
-//	return &News{
+//func NewNews(adaptor adaptor.IAdaptor) *news {
+//	return &news{
 //		redis: adaptor.GetRedis(),
 //	}
 //}
 //
-//func (n *News) GetLarkSmsCode(ctx context.Context, req *dto.GetSmsCodeReq, TenantAccessToken string, UserOpenID string, captcha string) (*do.LarkSmsCodeResp, error) {
+//func (n *news) GetLarkSmsCode(ctx context.Context, req *dto.GetSmsCodeReq, TenantAccessToken string, UserOpenID string, captcha string) (*do.LarkSmsCodeResp, error) {
 //	url := fmt.Sprintf("%s/open-apis/im/v1/messages?receive_id_type=open_id", larkHost)
 //	headers := map[string]string{
 //		"Authorization": "Bearer " + TenantAccessToken,

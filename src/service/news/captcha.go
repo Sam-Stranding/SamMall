@@ -1,4 +1,4 @@
-package News
+package news
 
 import (
 	"context"
@@ -21,6 +21,14 @@ func (s *Service) GetLarkSmsCode(ctx context.Context, req *dto.GetSmsCodeReq, Te
 func (s *Service) getLarkSmsCode(ctx context.Context, req *dto.GetSmsCodeReq, TenantAccessToken string, UserOpenID string) (*SmsCode, common.Errno) {
 	var captchaCode string
 	captchaCode = GenerateRandomNumber()
+	err := s.StoreMobileVerify(ctx, req.Mobile, captchaCode)
+	if err != nil {
+		logger.Error("getLarkSmsCode StoreMobileVerify error", zap.Error(err))
+		return nil, common.Errno{
+			Code:   common.MobileVerifyStoreErr.Code,
+			ErrMsg: common.MobileVerifyStoreErr.Msg,
+		}
+	}
 	getNewsFunc := func() (*SmsCode, error) {
 		smsCode, err := s.verify.GetLarkSmsCode(ctx, req, TenantAccessToken, UserOpenID, captchaCode)
 		if err != nil {

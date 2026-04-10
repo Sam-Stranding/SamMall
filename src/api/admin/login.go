@@ -48,13 +48,13 @@ func (c *Ctrl) MobilePasswordLogin(ctx *gin.Context) {
 }
 
 func (c *Ctrl) MobileVerifyLogin(ctx *gin.Context) {
-	//req := &dto.MobileVerifyLoginReq{}
-	//if err := ctx.BindJSON(req); err != nil {
-	//	api.WriteResp(ctx, nil, common.ParamErr.WithErr(err))
-	//	return
-	//}
-	//resp, errno := c.user.MobileVerifyLogin(ctx.Request.Context(), req)
-	//api.WriteResp(ctx, resp, errno)
+	req := &dto.MobileVerifyLoginReq{}
+	if err := ctx.BindJSON(req); err != nil {
+		api.WriteResp(ctx, nil, common.ParamErr.WithErr(err))
+		return
+	}
+	resp, errno := c.user.MobileVerifyLogin(ctx.Request.Context(), req)
+	api.WriteResp(ctx, resp, errno)
 }
 
 func (c *Ctrl) LarkQrCodeLogin(ctx *gin.Context) {

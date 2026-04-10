@@ -17,6 +17,7 @@ const (
 	AdminUserTokenExpire = time.Hour * 24
 	PasswordErrExpire    = time.Minute * 10
 	PasswordErrMaxCount  = 3
+	MobileVerifyExpire   = time.Minute * 5
 )
 
 const (

@@ -56,6 +56,11 @@ type MobileVerifyLoginReq struct {
 	Captcha string `json:"captcha"`
 }
 
+type MobileVerifyLoginResp struct {
+	Token string       `json:"token"`
+	User  AdminUserDto `json:"user"`
+}
+
 type MobilePasswordLoginReq struct {
 	Mobile   string `json:"mobile"`
 	Password string `json:"password"`
