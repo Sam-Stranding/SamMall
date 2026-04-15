@@ -70,3 +70,27 @@ func (c *Ctrl) UpdateUserStatus(ctx *gin.Context) {
 	errno := c.user.UpdateUserStatus(ctx.Request.Context(), user, req)
 	api.WriteResp(ctx, nil, errno)
 }
+
+func (c *Ctrl) LarkBind(ctx *gin.Context) {
+	user := api.GetAdminTokenFromCtx(ctx)
+	if user == nil {
+		api.WriteResp(ctx, nil, common.AuthErr)
+		return
+	}
+	req := &dto.LarkQrCodeBindReq{}
+	if err := ctx.BindJSON(req); err != nil {
+		api.WriteResp(ctx, nil, common.ParamErr.WithMsg(err.Error()))
+	}
+	errno := c.user.LarkBind(ctx.Request.Context(), user, req)
+	api.WriteResp(ctx, nil, errno)
+}
+
+func (c *Ctrl) LarkUnbind(ctx *gin.Context) {
+	user := api.GetAdminTokenFromCtx(ctx)
+	if user == nil {
+		api.WriteResp(ctx, nil, common.AuthErr)
+		return
+	}
+	errno := c.user.LarkUnbind(ctx.Request.Context(), user)
+	api.WriteResp(ctx, nil, errno)
+}

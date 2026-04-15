@@ -52,8 +52,8 @@ type GetSmsCodeResp struct {
 }
 
 type MobileVerifyLoginReq struct {
-	Mobile  string `json:"mobile"`
-	Captcha string `json:"captcha"`
+	Mobile string `json:"mobile"`
+	Verify string `json:"verify"`
 }
 
 type MobileVerifyLoginResp struct {

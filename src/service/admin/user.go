@@ -82,3 +82,31 @@ func (s *Service) UpdateUserStatus(ctx context.Context, adminUser *common.AdminU
 	}
 	return common.OK
 }
+
+func (s *Service) LarkBind(ctx context.Context, adminUser *common.AdminUser, req *dto.LarkQrCodeBindReq) common.Errno {
+	accessToken, errno := s.token.GetLarkUserAccessToken(ctx, req.AppCode, req.Code, req.RedirectUri, "", false)
+	if errno.NotOk() {
+		logger.Error("LarkBind GetLarkUserAccessToken Error", zap.Error(errno), zap.Any("req", req))
+		return common.ServerErr.WithErr(errno)
+	}
+	larkUserInfo, err := s.lark.GetLarkUserInfo(ctx, accessToken.Token)
+	if err != nil {
+		logger.Error("LarkBind GetLarkUserInfo Error", zap.Error(err), zap.Any("req", req))
+		return common.ServerErr.WithErr(err)
+	}
+	err = s.adminUser.UpdateUserLarkOpenID(ctx, adminUser.UserID, larkUserInfo.OpenID)
+	if err != nil {
+		logger.Error("LarkBind UpdateUserLarkOpenID Error", zap.Error(err), zap.Any("adminUser", adminUser))
+		return common.DatabaseErr.WithErr(err)
+	}
+	return common.OK
+}
+
+func (s *Service) LarkUnbind(ctx context.Context, adminUser *common.AdminUser) common.Errno {
+	err := s.adminUser.UpdateUserLarkOpenID(ctx, adminUser.UserID, "")
+	if err != nil {
+		logger.Error("LarkUnbind UpdateUserLarkOpenID Error", zap.Error(err), zap.Any("adminUser", adminUser))
+		return common.DatabaseErr.WithErr(err)
+	}
+	return common.OK
+}

@@ -97,6 +97,7 @@ func (r *Router) adminRoute(root *gin.RouterGroup) {
 		return r.admin.GetAdminUserByToken(ctx, token)
 	}))
 	//登录无鉴权：添加白名单
+	//登录
 	adminRoot.GET("v1/user/verify/captcha", r.admin.GetSmsCodeCaptcha)
 	adminRoot.POST("v1/user/verify/captcha/check", r.admin.CheckSmsCodeCaptcha)
 	adminRoot.POST("/v1/user/verify/smscode", r.admin.GetSmsCode)
@@ -104,8 +105,17 @@ func (r *Router) adminRoute(root *gin.RouterGroup) {
 	adminRoot.POST("v1/user/mobile/verify_login", r.admin.MobileVerifyLogin)
 	adminRoot.POST("v1/user/lark/qrcode_login", r.admin.LarkQrCodeLogin)
 
+	//管理员用户
 	adminRoot.GET("/v1/user/info", r.admin.GetUserInfo)
 	adminRoot.POST("/v1/user/create", r.admin.CreateUser)
 	adminRoot.POST("/v1/user/update", r.admin.UpdateUser)
 	adminRoot.POST("/v1/user/update_status", r.admin.UpdateUserStatus)
+
+	//权限菜单
+	adminRoot.GET("/v1/perm/list", r.admin.PermissionList)
+	adminRoot.GET("/v1/perm/my_perm", r.admin.MyPermissionList)
+
+	//飞书绑定，解绑
+	adminRoot.POST("/v1/user/lark/bind", r.admin.LarkBind)
+	adminRoot.POST("/v1/user/lark/unbind", r.admin.LarkUnbind)
 }

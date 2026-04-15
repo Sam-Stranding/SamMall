@@ -107,7 +107,7 @@ func (s *Service) GetSmsCode(ctx context.Context, req *dto.GetSmsCodeReq) (*dto.
 
 func (s *Service) MobileVerifyLogin(ctx context.Context, req *dto.MobileVerifyLoginReq) (*dto.MobileVerifyLoginResp, common.Errno) {
 	//验证码校验
-	_, err := s.news.VerifyMobileVerifyCode(ctx, req.Mobile, req.Captcha)
+	_, err := s.news.VerifyMobileVerifyCode(ctx, req.Mobile, req.Verify)
 	if err != nil {
 		logger.Error("MobileVerifyLogin VerifyMobileVerifyCode Error", zap.Error(err), zap.String("mobile", req.Mobile))
 		return nil, common.ServerErr.WithErr(err)

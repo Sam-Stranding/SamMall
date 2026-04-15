@@ -17,6 +17,7 @@ type IAdminUser interface {
 	CreateUser(ctx context.Context, req *do.CreateUser) (int64, error)
 	UpdateUser(ctx context.Context, req *do.UpdateUser) error
 	UpdateUserStatus(ctx context.Context, req *do.UpdateUserStatus) error
+	UpdateUserLarkOpenID(ctx context.Context, userID int64, openID string) error
 
 	GetUserByMobile(ctx context.Context, mobile string) (*model.AdminUser, error)
 	GetUserInfo(ctx context.Context, userId int64) (*model.AdminUser, error)
@@ -85,6 +86,12 @@ func (a *AdminUser) UpdateUserStatus(ctx context.Context, req *do.UpdateUserStat
 		return err
 	}
 	return nil
+}
+
+func (a *AdminUser) UpdateUserLarkOpenID(ctx context.Context, userID int64, openID string) error {
+	qs := query.Use(a.db).AdminUser
+	_, err := qs.WithContext(ctx).Where(qs.ID.Eq(userID)).Update(qs.LarkOpenID, openID)
+	return err
 }
 
 func (a *AdminUser) GetUserInfo(ctx context.Context, userId int64) (*model.AdminUser, error) {

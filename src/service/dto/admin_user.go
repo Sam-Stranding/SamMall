@@ -30,3 +30,9 @@ type UpdateUserStatusReq struct {
 	ID     int64 `json:"id"`
 	Status int32 `json:"status"`
 }
+
+type LarkQrCodeBindReq struct {
+	AppCode     int32  `json:"app_code"`
+	Code        string `json:"code"`
+	RedirectUri string `json:"redirect_uri"`
+}
