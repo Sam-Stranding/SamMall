@@ -66,3 +66,13 @@ func (c *Ctrl) LarkQrCodeLogin(ctx *gin.Context) {
 	resp, errno := c.user.LarkQrCodeLogin(ctx.Request.Context(), req)
 	api.WriteResp(ctx, resp, errno)
 }
+
+func (c *Ctrl) MobilePasswordReset(ctx *gin.Context) {
+	req := &dto.MobilePasswordResetReq{}
+	if err := ctx.BindJSON(req); err != nil {
+		api.WriteResp(ctx, nil, common.ParamErr.WithErr(err))
+		return
+	}
+	errno := c.user.MobilePasswordReset(ctx.Request.Context(), req)
+	api.WriteResp(ctx, nil, errno)
+}

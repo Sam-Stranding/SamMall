@@ -6,6 +6,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//func (c *Ctrl) CreatePermission(ctx *gin.Context) {
+//	url := api.GetAdminTokenFromCtx(ctx)
+//	if url == nil {
+//		api.WriteResp(ctx, nil, common.AuthErr)
+//		return
+//	}
+//	req := &dto.CreatePermissionReq{}
+//	resp, errno := c.perm.CreatePermission(ctx.Request.Context(), req)
+//	api.WriteResp(ctx, resp, errno)
+//}
+
 func (c *Ctrl) PermissionList(ctx *gin.Context) {
 	user := api.GetAdminTokenFromCtx(ctx)
 	if user == nil {

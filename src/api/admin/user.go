@@ -17,6 +17,17 @@ func (c *Ctrl) GetAdminUserByToken(ctx context.Context, token string) (*common.A
 	return adminUser, nil
 }
 
+func (c *Ctrl) AdminUserList(ctx *gin.Context) {
+	user := api.GetAdminTokenFromCtx(ctx)
+	if user == nil {
+		api.WriteResp(ctx, nil, common.AuthErr)
+		return
+	}
+	req := &dto.ListAdminUserReq{}
+	resp, errno := c.user.AdminUserList(ctx.Request.Context(), user, req)
+	api.WriteResp(ctx, resp, errno)
+}
+
 func (c *Ctrl) GetUserInfo(ctx *gin.Context) {
 	user := api.GetAdminTokenFromCtx(ctx)
 	if user == nil {
@@ -57,20 +68,6 @@ func (c *Ctrl) UpdateUser(ctx *gin.Context) {
 	api.WriteResp(ctx, nil, errno)
 }
 
-func (c *Ctrl) UpdateUserStatus(ctx *gin.Context) {
-	user := api.GetAdminTokenFromCtx(ctx)
-	if user == nil {
-		api.WriteResp(ctx, nil, common.AuthErr)
-		return
-	}
-	req := &dto.UpdateUserStatusReq{}
-	if err := ctx.BindJSON(req); err != nil {
-		api.WriteResp(ctx, nil, common.ParamErr.WithMsg(err.Error()))
-	}
-	errno := c.user.UpdateUserStatus(ctx.Request.Context(), user, req)
-	api.WriteResp(ctx, nil, errno)
-}
-
 func (c *Ctrl) LarkBind(ctx *gin.Context) {
 	user := api.GetAdminTokenFromCtx(ctx)
 	if user == nil {
@@ -92,5 +89,11 @@ func (c *Ctrl) LarkUnbind(ctx *gin.Context) {
 		return
 	}
 	errno := c.user.LarkUnbind(ctx.Request.Context(), user)
+	api.WriteResp(ctx, nil, errno)
+}
+
+func (c *Ctrl) AdminUserLogout(ctx *gin.Context) {
+	adminUser := api.GetAdminTokenFromCtx(ctx)
+	errno := c.user.AdminUserLogout(ctx.Request.Context(), adminUser)
 	api.WriteResp(ctx, nil, errno)
 }

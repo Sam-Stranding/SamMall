@@ -77,3 +77,10 @@ type LarkQrCodeLoginReq struct {
 	Code        string `json:"code"`
 	RedirectUri string `json:"redirect_uri"`
 }
+
+type MobilePasswordResetReq struct {
+	Mobile          string `json:"mobile"`
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirm_password"`
+	VerifyCode      string `json:"verify_code"`
+}

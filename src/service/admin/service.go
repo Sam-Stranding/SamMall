@@ -13,6 +13,7 @@ import (
 
 type Service struct {
 	adminUser admin.IAdminUser
+	adminRole admin.IAdminRole
 	user      admin.IAdminUser
 	captcha   slide.Captcha
 	verify    redis.IVerify
@@ -24,6 +25,7 @@ type Service struct {
 func NewService(adaptor adaptor.IAdaptor) *Service {
 	return &Service{
 		adminUser: admin.NewAdminUser(adaptor),
+		adminRole: admin.NewAdminRole(adaptor),
 		user:      admin.NewAdminUser(adaptor),
 		verify:    redis.NewVerify(adaptor),
 		captcha:   captcha.NewSlideCaptcha(),

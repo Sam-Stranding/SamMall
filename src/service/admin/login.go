@@ -6,16 +6,18 @@ import (
 
 	"github.com/Sam-Stranding/SamMall/src/common"
 	"github.com/Sam-Stranding/SamMall/src/consts"
+	"github.com/Sam-Stranding/SamMall/src/service/do"
 	"github.com/Sam-Stranding/SamMall/src/service/dto"
 	"github.com/Sam-Stranding/SamMall/src/utils/logger"
 	"github.com/Sam-Stranding/SamMall/src/utils/tools"
 	"github.com/go-redis/redis"
 	"github.com/gogf/gf/util/gconv"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 func (s *Service) processToken(ctx context.Context, token string, adminUser *dto.AdminUserDto) error {
-	err := s.verify.SetAdminUserToken(ctx, token, gconv.String(adminUser), consts.AdminUserTokenExpire)
+	err := s.verify.SetAdminUserToken(ctx, adminUser.UserID, token, gconv.String(adminUser), consts.AdminUserTokenExpire)
 	if err != nil {
 		logger.Error("SetAdminUserToken Error", zap.Error(err), zap.String("mobile", adminUser.Mobile))
 		return common.DatabaseErr.WithErr(err)
@@ -58,6 +60,7 @@ func (s *Service) MobilePasswordLogin(ctx context.Context, req *dto.MobilePasswo
 	_ = s.verify.DeletePasswordErr(ctx, req.Mobile)
 
 	adminUserDto := dto.AdminUserDto{
+		ID:         adminUser.ID,
 		UserID:     adminUser.ID,
 		Name:       adminUser.Name,
 		NickName:   adminUser.NickName,
@@ -123,6 +126,7 @@ func (s *Service) MobileVerifyLogin(ctx context.Context, req *dto.MobileVerifyLo
 		return nil, common.InvalidPasswordErr
 	}
 	adminUserDto := dto.AdminUserDto{
+		ID:         adminUser.ID,
 		UserID:     adminUser.ID,
 		Name:       adminUser.Name,
 		NickName:   adminUser.NickName,
@@ -145,6 +149,34 @@ func (s *Service) MobileVerifyLogin(ctx context.Context, req *dto.MobileVerifyLo
 	}, common.OK
 }
 
+func (s *Service) MobilePasswordReset(ctx context.Context, req *dto.MobilePasswordResetReq) common.Errno {
+	_, err := s.news.VerifyMobileVerifyCode(ctx, req.Mobile, req.VerifyCode)
+	if err != nil {
+		logger.Error("MobilePasswordReset VerifyMobileVerifyCode Error", zap.Error(err), zap.String("mobile", req.Mobile))
+		return common.ServerErr.WithErr(err)
+	}
+	adminUser, err := s.user.GetUserByMobile(ctx, req.Mobile)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return common.AdminUserNotFound
+		}
+		logger.Error("MobilePasswordReset GetUserByMobile Error", zap.Error(err), zap.String("mobile", req.Mobile))
+		return common.DatabaseErr.WithErr(err)
+	}
+	if adminUser == nil || adminUser.Status != consts.IsEnable {
+		return common.AdminUserNotFound
+	}
+	err = s.adminUser.UpdateUserPassword(ctx, &do.UpdateUserPassword{
+		ID:       adminUser.ID,
+		Password: req.Password,
+	})
+	if err != nil {
+		logger.Error("MobilePasswordReset UpdateUserPassword Error", zap.Error(err), zap.String("mobile", req.Mobile))
+		return common.DatabaseErr.WithErr(err)
+	}
+	return common.OK
+}
+
 func (s *Service) LarkQrCodeLogin(ctx context.Context, req dto.LarkQrCodeLoginReq) (interface{}, common.Errno) {
 	accessToken, errno := s.token.GetLarkUserAccessToken(ctx, req.AppCode, req.Code, req.RedirectUri, "", false)
 	if errno.NotOk() {
@@ -158,13 +190,18 @@ func (s *Service) LarkQrCodeLogin(ctx context.Context, req dto.LarkQrCodeLoginRe
 	}
 	adminUser, err := s.user.GetUserByLarkOpenID(ctx, larkUserInfo.OpenID)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			logger.Error("LarkQrCodeLogin GetUserByLarkOpenID Error", zap.Error(err), zap.Any("req", req))
+			return nil, common.AdminUserNotFound
+		}
 		logger.Error("LarkQrCodeLogin GetUserByLarkOpenID Error", zap.Error(err), zap.Any("req", req))
 		return nil, common.DatabaseErr.WithErr(err)
 	}
 	if adminUser == nil || adminUser.Status != consts.IsEnable {
-		return nil, common.AdminUSerNotFoundErr
+		return nil, common.AdminUserNotFound
 	}
 	adminUserDto := dto.AdminUserDto{
+		ID:         adminUser.ID,
 		UserID:     adminUser.ID,
 		Name:       adminUser.Name,
 		NickName:   adminUser.NickName,

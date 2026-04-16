@@ -21,8 +21,9 @@ type IVerify interface {
 	SetCaptchaTicket(ctx context.Context, ticket string, value string, expire time.Duration) error
 	GetCaptchaTicket(ctx context.Context, ticket string) (string, error)
 
-	SetAdminUserToken(ctx context.Context, token string, tokenData string, expire time.Duration) error
+	SetAdminUserToken(ctx context.Context, userID int64, token string, tokenData string, expire time.Duration) error
 	GetAdminUserToken(ctx context.Context, token string) (string, error)
+	CleanToken(ctx context.Context, userID int64) error
 
 	IncrPasswordErr(ctx context.Context, mobile string, expire time.Duration) (int64, error)
 	DeletePasswordErr(ctx context.Context, mobile string) error
@@ -90,9 +91,18 @@ func (v *Verify) GetCaptchaTicket(ctx context.Context, ticket string) (string, e
 	return get, nil
 }
 
-func (v *Verify) SetAdminUserToken(ctx context.Context, token string, tokenData string, expire time.Duration) error {
-	redisToken := fmtVerifyAdminUserToken(token)
-	return v.redis.Set(redisToken, tokenData, expire).Err()
+func fmtUserMapTokenAdminUser(userID int64) string {
+	return fmt.Sprintf("%s:admin_user_token:%d", config.ServerFullName, userID)
+}
+
+func (v *Verify) SetAdminUserToken(ctx context.Context, userID int64, token string, tokenData string, expire time.Duration) error {
+	redisKey := fmtVerifyAdminUserToken(token)
+	_, err := v.redis.Set(redisKey, tokenData, expire).Result()
+	if err != nil {
+		return err
+	}
+	userMapTokenKey := fmtUserMapTokenAdminUser(userID)
+	return v.redis.Set(userMapTokenKey, token, expire).Err()
 }
 
 func (v *Verify) GetAdminUserToken(ctx context.Context, token string) (string, error) {
@@ -102,6 +112,16 @@ func (v *Verify) GetAdminUserToken(ctx context.Context, token string) (string, e
 		return "", err
 	}
 	return get, nil
+}
+
+func (v *Verify) CleanToken(ctx context.Context, userID int64) error {
+	userMapTokenKey := fmtUserMapTokenAdminUser(userID)
+	token, err := v.redis.Get(userMapTokenKey).Result()
+	if err != nil {
+		return err
+	}
+	redisKey := fmtVerifyAdminUserToken(token)
+	return v.redis.Del(redisKey, userMapTokenKey).Err()
 }
 
 func fmtVerifyMobilePasswordErr(mobile string) string {

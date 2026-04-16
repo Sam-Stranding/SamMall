@@ -2,6 +2,9 @@ package dto
 
 import "github.com/Sam-Stranding/SamMall/src/common"
 
+type CreatePermissionReq struct {
+}
+
 type PermissionDto struct {
 	ID       int64  `json:"id"`
 	Code     string `json:"code"`      // 权限编码
