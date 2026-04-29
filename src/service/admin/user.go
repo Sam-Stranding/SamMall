@@ -57,7 +57,7 @@ func (s *Service) AdminUserList(ctx context.Context, adminUser *common.AdminUser
 	roleIds := make([]int64, 0)
 	for _, vList := range userRoleMap {
 		for _, v := range vList {
-			roleIds = append(roleIds, v.ID)
+			roleIds = append(roleIds, v.RoleID)
 		}
 	}
 	//通过role_id获取name(权限名称)
@@ -97,7 +97,7 @@ func (s *Service) AdminUserList(ctx context.Context, adminUser *common.AdminUser
 }
 
 func (s *Service) GetUserInfo(ctx context.Context, adminUser *common.AdminUser) (*dto.AdminUserWithRoleDto, common.Errno) {
-	user, err := s.adminUser.GetUserInfo(ctx, adminUser.UserID)
+	user, err := s.adminUser.GetUserInfo(ctx, adminUser.ID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, common.UserNotFoundErr
@@ -156,7 +156,7 @@ func (s *Service) CreateUser(ctx context.Context, adminUser *common.AdminUser, r
 		NickName:    req.NickName,
 		Mobile:      req.Mobile,
 		Sex:         req.Sex,
-		AdminUserID: adminUser.UserID,
+		AdminUserID: adminUser.ID,
 		RoleIDs:     req.RoleIDs,
 	})
 	if err != nil {
@@ -172,7 +172,7 @@ func (s *Service) UpdateUser(ctx context.Context, adminUser *common.AdminUser, r
 		Name:        req.Name,
 		NickName:    req.NickName,
 		Sex:         req.Sex,
-		AdminUserID: adminUser.UserID,
+		AdminUserID: adminUser.ID,
 		Status:      req.Status,
 		RoleIDs:     req.RoleIDs,
 	})
@@ -194,7 +194,7 @@ func (s *Service) LarkBind(ctx context.Context, adminUser *common.AdminUser, req
 		logger.Error("LarkBind GetLarkUserInfo Error", zap.Error(err), zap.Any("req", req))
 		return common.ServerErr.WithErr(err)
 	}
-	err = s.adminUser.UpdateUserLarkOpenID(ctx, adminUser.UserID, larkUserInfo.OpenID)
+	err = s.adminUser.UpdateUserLarkOpenID(ctx, adminUser.ID, larkUserInfo.OpenID)
 	if err != nil {
 		logger.Error("LarkBind UpdateUserLarkOpenID Error", zap.Error(err), zap.Any("adminUser", adminUser))
 		return common.DatabaseErr.WithErr(err)
@@ -203,7 +203,7 @@ func (s *Service) LarkBind(ctx context.Context, adminUser *common.AdminUser, req
 }
 
 func (s *Service) LarkUnbind(ctx context.Context, adminUser *common.AdminUser) common.Errno {
-	err := s.adminUser.UpdateUserLarkOpenID(ctx, adminUser.UserID, "")
+	err := s.adminUser.UpdateUserLarkOpenID(ctx, adminUser.ID, "")
 	if err != nil {
 		logger.Error("LarkUnbind UpdateUserLarkOpenID Error", zap.Error(err), zap.Any("adminUser", adminUser))
 		return common.DatabaseErr.WithErr(err)
@@ -212,7 +212,7 @@ func (s *Service) LarkUnbind(ctx context.Context, adminUser *common.AdminUser) c
 }
 
 func (s *Service) AdminUserLogout(ctx context.Context, adminUser *common.AdminUser) common.Errno {
-	err := s.verify.CleanToken(ctx, adminUser.UserID)
+	err := s.verify.CleanToken(ctx, adminUser.ID)
 	if err != nil {
 		logger.Error("AdminUserLogout CleanToken Error", zap.Error(err), zap.Any("adminUser", adminUser))
 		return common.RedisErr.WithErr(err)

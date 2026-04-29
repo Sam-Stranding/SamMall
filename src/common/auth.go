@@ -1,7 +1,7 @@
 package common
 
 type AdminUser struct {
-	UserID     int64  `json:"user_id"`
+	ID         int64  `json:"id"`
 	Name       string `json:"name"`
 	NickName   string `json:"nick_name"`
 	Sex        int32  `json:"sex"`

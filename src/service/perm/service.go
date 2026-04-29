@@ -58,8 +58,8 @@ func (s *Service) PermissionList(ctx context.Context) (*dto.PermissionListResp, 
 	}, common.OK
 }
 
-func (s *Service) MyPermissionList(ctx context.Context, user *common.AdminUser) (*dto.PermissionListResp, common.Errno) {
-	permList, total, err := s.adminPerm.MyPermissionList(ctx, common.Pager{
+func (s *Service) MyPermissionList(ctx context.Context, user *common.AdminUser) ([]*dto.PermissionDto, common.Errno) {
+	permList, err := s.adminPerm.MyPermissionList(ctx, common.Pager{
 		Page:      1,
 		Limit:     1000,
 		UnLimited: true,
@@ -82,13 +82,5 @@ func (s *Service) MyPermissionList(ctx context.Context, user *common.AdminUser) 
 			Type:     item.Type,
 		})
 	})
-	return &dto.PermissionListResp{
-		Pager: common.Pager{
-			Page:      1,
-			Limit:     1000,
-			UnLimited: true,
-		},
-		Total: total,
-		List:  retList,
-	}, common.OK
+	return retList, common.OK
 }

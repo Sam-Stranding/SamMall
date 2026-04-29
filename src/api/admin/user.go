@@ -24,6 +24,7 @@ func (c *Ctrl) AdminUserList(ctx *gin.Context) {
 		return
 	}
 	req := &dto.ListAdminUserReq{}
+	_ = ctx.ShouldBindQuery(req)
 	resp, errno := c.user.AdminUserList(ctx.Request.Context(), user, req)
 	api.WriteResp(ctx, resp, errno)
 }
@@ -67,6 +68,8 @@ func (c *Ctrl) UpdateUser(ctx *gin.Context) {
 	errno := c.user.UpdateUser(ctx.Request.Context(), user, req)
 	api.WriteResp(ctx, nil, errno)
 }
+
+func (c *Ctrl) DeleteUser(ctx *gin.Context) {}
 
 func (c *Ctrl) LarkBind(ctx *gin.Context) {
 	user := api.GetAdminTokenFromCtx(ctx)

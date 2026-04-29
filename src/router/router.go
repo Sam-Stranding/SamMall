@@ -112,11 +112,12 @@ func (r *Router) adminRoute(root *gin.RouterGroup) {
 	adminRoot.GET("/v1/user/info", r.admin.GetUserInfo)
 	adminRoot.POST("/v1/user/create", r.admin.CreateUser)
 	adminRoot.POST("/v1/user/update", r.admin.UpdateUser)
+	adminRoot.POST("/v1/user/delete", r.admin.DeleteUser)
 
 	//权限菜单
-	//adminRoot.POST("/v1/perm/create", r.admin.CreatePermission)
-	//adminRoot.POST("/v1/perm/update", r.admin.UpdatePermission)
-	//adminRoot.POST("/v1/perm/delete", r.admin.DeletePermission)
+	adminRoot.POST("/v1/perm/create", r.admin.CreatePermission)
+	adminRoot.POST("/v1/perm/update", r.admin.UpdatePermission)
+	adminRoot.POST("/v1/perm/delete", r.admin.DeletePermission)
 	adminRoot.GET("/v1/perm/list", r.admin.PermissionList)
 	adminRoot.GET("/v1/perm/my_perm", r.admin.MyPermissionList)
 
@@ -128,8 +129,9 @@ func (r *Router) adminRoute(root *gin.RouterGroup) {
 	adminRoot.POST("/v1/user/logout", r.admin.AdminUserLogout)
 
 	//角色管理
-	//adminRoot.POST("/v1/role/create", r.admin.CreateRole)
-	//adminRoot.POST("/v1/role/update", r.admin.UpdateRole)
-	//adminRoot.GET("/v1/role/list", r.admin.RoleList)
-	//adminRoot.GET("/v1/role/my_role", r.admin.MyRoleList)
+	adminRoot.POST("/v1/role/create", r.admin.AddRole)
+	adminRoot.POST("/v1/role/update", r.admin.UpdateRole)
+	adminRoot.GET("/v1/role/list", r.admin.RoleList)
+	adminRoot.GET("/v1/role/my_role", r.admin.MyRoles)
+	adminRoot.POST("/v1/role/perm/sets", r.admin.SetRolePerms)
 }

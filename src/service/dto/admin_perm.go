@@ -2,9 +2,6 @@ package dto
 
 import "github.com/Sam-Stranding/SamMall/src/common"
 
-type CreatePermissionReq struct {
-}
-
 type PermissionDto struct {
 	ID       int64  `json:"id"`
 	Code     string `json:"code"`      // 权限编码
@@ -20,4 +17,27 @@ type PermissionListResp struct {
 	common.Pager
 	Total int64            `json:"total"`
 	List  []*PermissionDto `json:"list"`
+}
+
+type AddPermissionReq struct {
+	Code     string `json:"code"`
+	Type     int32  `json:"type"`
+	Desc     string `json:"desc"`
+	Name     string `json:"name"`
+	PagePath string `json:"page_path"`
+	ParentID int64  `json:"parent_id"`
+	Sort     int32  `json:"sort"`
+}
+
+type UpdatePermDto struct {
+	ID int64 `json:"id"`
+	AddPermissionReq
+}
+
+type UpdatePermissionReq struct {
+	List []UpdatePermDto `json:"list"`
+}
+
+type DeletePermissionReq struct {
+	ID int64 `json:"id"`
 }

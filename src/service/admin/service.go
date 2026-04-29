@@ -13,7 +13,7 @@ import (
 
 type Service struct {
 	adminUser admin.IAdminUser
-	adminRole admin.IAdminRole
+	adminRole admin.IRole
 	user      admin.IAdminUser
 	captcha   slide.Captcha
 	verify    redis.IVerify
