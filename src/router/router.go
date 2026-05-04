@@ -134,4 +134,17 @@ func (r *Router) adminRoute(root *gin.RouterGroup) {
 	adminRoot.GET("/v1/role/list", r.admin.RoleList)
 	adminRoot.GET("/v1/role/my_role", r.admin.MyRoles)
 	adminRoot.POST("/v1/role/perm/sets", r.admin.SetRolePerms)
+
+	//课程目录管理
+	adminRoot.POST("/v1/lesson/category/create", r.admin.CreateCategory)
+	adminRoot.POST("/v1/lesson/category/update", r.admin.UpdateCategory)
+	adminRoot.POST("/v1/lesson/category/delete", r.admin.DeleteCategory)
+	adminRoot.GET("/v1/lesson/category/list", r.admin.CategoryList)
+	adminRoot.POST("/v1/lesson/category/update_sorts", r.admin.CategorySorts)
+
+	//课程管理
+	//adminRoot.POST("/v1/lesson/create", r.admin.CreateLesson)
+	//adminRoot.POST("/v1/lesson/update", r.admin.UpdateLesson)
+	//adminRoot.POST("/v1/lesson/update_status", r.admin.updateStatusLesson)
+	//adminRoot.GET("/v1/lesson/list", r.admin.LessonList)
 }

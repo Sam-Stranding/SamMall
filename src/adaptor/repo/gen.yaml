@@ -10,6 +10,8 @@ database:
     - course_catalog
     - course_goods
     - course_lessons
+    - lessons
+    - lesson_category
     - mobile_user
     - order_items
     - orders
@@ -20,6 +22,10 @@ database:
     - sms_template
     - user_course_goods
     - wechat_user
+    - order_refunds
+    - user_cart
+    - lesson_learn_progress
+    - lesson_learn_record
   # 指定生成的查询代码文件的输出目录
   outPath: "./query"
   # 指定查询代码的主文件名 gen.go

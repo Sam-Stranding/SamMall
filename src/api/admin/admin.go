@@ -3,6 +3,7 @@ package admin
 import (
 	"github.com/Sam-Stranding/SamMall/src/adaptor"
 	"github.com/Sam-Stranding/SamMall/src/service/admin"
+	"github.com/Sam-Stranding/SamMall/src/service/goods"
 	"github.com/Sam-Stranding/SamMall/src/service/perm"
 	"github.com/Sam-Stranding/SamMall/src/service/role"
 )
@@ -12,6 +13,7 @@ type Ctrl struct {
 	user    *admin.Service
 	perm    *perm.Service
 	role    *role.Service
+	lesson  *goods.Service
 }
 
 func NewCtrl(adaptor adaptor.IAdaptor) *Ctrl {
@@ -20,5 +22,6 @@ func NewCtrl(adaptor adaptor.IAdaptor) *Ctrl {
 		user:    admin.NewService(adaptor),
 		perm:    perm.NewService(adaptor),
 		role:    role.NewService(adaptor),
+		lesson:  goods.NewService(adaptor),
 	}
 }

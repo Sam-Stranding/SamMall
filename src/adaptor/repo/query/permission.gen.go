@@ -52,11 +52,11 @@ type permission struct {
 	ALL      field.Asterisk
 	ID       field.Int64
 	Code     field.String // 权限编码
-	Type     field.Int32  // 1:菜单  2：操作
+	Type     field.Int32  // 1:菜单 2:操作
 	Name     field.String // 权限名称
 	PagePath field.String // 菜单路径
 	ParentID field.Int64  // 父级权限ID
-	Status   field.Int32  // 1：正常 -1：禁用
+	Status   field.Int32  // 1:正常 -1:禁用
 	Sort     field.Int32
 	Desc     field.String // 权限描述
 	CreateAt field.Time
